@@ -7,6 +7,8 @@ public class ClothingItem {
     private String price;
     private String style;
     private String type;
+    private String weather;
+    private String shopName;
 
     public ClothingItem() {}
 
@@ -16,4 +18,6 @@ public class ClothingItem {
     public String getPrice() { return price; }
     public String getStyle() { return style; }
     public String getType() { return type; }
+    public String getWeather(){ return weather; }
+    public String getShopName(){ return shopName; }
 }
