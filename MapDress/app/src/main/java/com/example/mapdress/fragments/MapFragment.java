@@ -115,8 +115,17 @@
                 public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         WeatherResponse weather = response.body();
-                        String info = "Температура: " + weather.main.temp + "°C\n" +
-                                "Описание: " + weather.weather[0].description;
+                        String info = "Температура: " + weather.main.temp + "°C (ощущается как " + weather.main.feels_like + "°C)\n" +
+                                "Макс.: " + weather.main.temp_max + "°C, Мин.: " + weather.main.temp_min + "°C\n" +
+                                "Влажность: " + weather.main.humidity + "%\n" +
+                                "Давление: " + weather.main.pressure + " гПа\n" +
+                                "Ветер: " + weather.wind.speed + " м/с, " + (weather.wind.deg != null ? weather.wind.deg + "°\n" : "направление неизвестно\n") +
+                                (weather.rain != null && weather.rain.oneH != null ? "Дождь (1ч): " + weather.rain.oneH + " мм\n" : "") +
+                                (weather.snow != null && weather.snow.oneH != null ? "Снег (1ч): " + weather.snow.oneH + " мм\n" : "") +
+                                "Облачность: " + weather.clouds.all + "%\n" +
+                                "Видимость: " + (weather.visibility != null ? weather.visibility + " м\n" : "неизвестно\n") +
+                                "Погода: " + weather.weather[0].description + " (" + weather.weather[0].main + ")";
+
                         description.setText(info);
                     } else {
                         description.setText("Не удалось получить погоду.");
