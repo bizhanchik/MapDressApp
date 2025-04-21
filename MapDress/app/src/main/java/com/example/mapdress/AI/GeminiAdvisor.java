@@ -1,49 +1,80 @@
+// GeminiAdvisor.java
 package com.example.mapdress.AI;
 
-import android.util.Log;
-
 import com.example.mapdress.BuildConfig;
-import com.google.ai.client.generativeai.GenerativeModel;
-import com.google.ai.client.generativeai.type.Content;
-import com.google.ai.client.generativeai.type.Part;
-import com.google.ai.client.generativeai.type.TextPart;
-
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
+import com.google.gson.annotations.SerializedName;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public class GeminiAdvisor {
+    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/";
+    private static GeminiApi geminiApi;
 
-    private static final String API_KEY = BuildConfig.GEMINI_API_KEY;
-
-    public static String getClothingAdvice(String weather, double temperature) {
-        String prompt = "На улице " + temperature + "°C и " + weather +
-                ". Дай краткий и практичный совет, как одеться человеку.";
-
-        GenerativeModel model = new GenerativeModel(
-                "gemini-pro",
-                BuildConfig.GEMINI_API_KEY
-        );
-
-        // Альтернативный способ без Builder
-        Content input = new Content(Collections.singletonList(new TextPart(prompt)));
-
-        try {
-            Content response = model.generateContent(input);
-            if (response != null && !response.getParts().isEmpty()) {
-                Part part = response.getParts().get(0);
-                if (part instanceof TextPart) {
-                    return ((TextPart) part).getText();
-                } else {
-                    return "Ответ не является текстом.";
-                }
-            } else {
-                return "Нет совета.";
-            }
-        } catch (Exception e) {
-            Log.e("GeminiAdvisor", "Ошибка обращения к Gemini", e);
-            return "Ошибка при обращении к Gemini.";
-        }
+    public static void initialize() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        geminiApi = retrofit.create(GeminiApi.class);
     }
 
+    public static GeminiApi getApi() {
+        if (geminiApi == null) initialize();
+        return geminiApi;
+    }
 
+    public interface GeminiApi {
+        @Headers("Content-Type: application/json")
+        @POST("models/gemini-pro:generateContent")
+        Call<GenerateContentResponse> generateContent(
+                @Body GenerateContentRequest request,
+                @Query("key") String apiKey
+        );
+    }
+
+    public static class GenerateContentRequest {
+        @SerializedName("contents")
+        public Message[] contents;
+        public GenerateContentRequest(Message[] contents) { this.contents = contents; }
+    }
+
+    public static class Message {
+        @SerializedName("parts")
+        public Part[] parts;
+        public Message(Part[] parts) { this.parts = parts; }
+    }
+
+    public static class Part {
+        @SerializedName("text")
+        public String text;
+        public Part(String text) { this.text = text; }
+    }
+
+    public static class GenerateContentResponse {
+        @SerializedName("candidates")
+        public Candidate[] candidates;
+    }
+
+    public static class Candidate {
+        @SerializedName("content")
+        public Content content;
+    }
+
+    public static class Content {
+        @SerializedName("parts")
+        public Part[] parts;
+    }
 }

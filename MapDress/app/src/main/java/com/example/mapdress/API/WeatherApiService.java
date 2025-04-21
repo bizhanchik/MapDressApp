@@ -14,12 +14,4 @@ public interface WeatherApiService {
             @Query("lang") String lang
     );
 
-    @GET("forecast")
-    Call<WeatherResponse> getForecast(
-            @Query("lat") double lat,
-            @Query("lon") double lon,
-            @Query("appid") String apiKey,
-            @Query("units") String units,
-            @Query("lang") String lang
-    );
 }
