@@ -13,7 +13,6 @@
         android:layout_height="180dp"
         android:scaleType="centerCrop"
         android:background="@null"
-        android:contentDescription="Изображение товара"
         android:adjustViewBounds="true"
         android:clipToOutline="true" />
 
@@ -21,7 +20,7 @@
         android:id="@+id/nameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Название товара"
+        android:text="@string/item_name"
         android:textStyle="bold"
         android:textSize="16sp"
         android:maxLines="1"
@@ -32,7 +31,7 @@
         android:id="@+id/priceTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Цена: 12 000 ₸"
+        android:text="@string/item_price"
         android:textColor="#555555"
         android:textSize="14sp"
         android:paddingBottom="8dp" />
@@ -41,7 +40,7 @@
         android:id="@+id/buttonAddToCart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Добавить в корзину"
+        android:text="@string/add_to_cart"
         android:textAllCaps="false"
         android:backgroundTint="#2196F3"
         android:textColor="#FFFFFF" />
